@@ -1,0 +1,6 @@
+{
+  "clientsCommit": "c6afeb415cfc9ff2f488bb52dd8b4af64c2e0d04",
+  "clientsRepository": "https://github.com/opto-sync/opto-sync-clients.git",
+  "coreCommit": "db05525d1b9b98649de1186144e552640c7a6101",
+  "coreRepository": "https://github.com/opto-sync/syncer.c.git"
+}

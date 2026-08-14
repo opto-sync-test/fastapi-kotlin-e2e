@@ -1,0 +1,7 @@
+/.build/
+/.pytest_cache/
+/.venv/
+**/__pycache__/
+*.pyc
+/kotlin/.gradle/
+/kotlin/build/
