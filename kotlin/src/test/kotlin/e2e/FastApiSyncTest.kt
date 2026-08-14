@@ -53,4 +53,35 @@ class FastApiSyncTest {
         assertTrue(body["merged"]["items"][0]["server"].asBoolean())
         assertTrue(body["merged"]["items"][0]["client"].asBoolean())
     }
+
+    @Test
+    fun `background worker multiplexes mobile and desktop lanes`() {
+        val endpoint = System.getenv("OPTO_SYNC_ENDPOINT") ?: "http://127.0.0.1:8061"
+        val worker = BackgroundSyncWorker(
+            OptoSyncClient(URI(endpoint), "e2e-token"),
+        )
+        val responses = worker.drain(
+            listOf(
+                SyncLane(
+                    name = "android-workmanager",
+                    baseJson = """{"id":"doc-1","profile":{"server":"kept"}}""",
+                    incomingJson = """{"profile":{"mobile":"background"}}""",
+                ),
+                SyncLane(
+                    name = "desktop-scheduler",
+                    baseJson = """{"id":"doc-2","profile":{"server":"kept"}}""",
+                    incomingJson = """{"profile":{"desktop":"background"}}""",
+                ),
+            ),
+        )
+
+        assertEquals(
+            listOf("android-workmanager", "desktop-scheduler"),
+            responses.map { it.name },
+        )
+        val bodies = responses.associate { it.name to jacksonObjectMapper().readTree(it.body) }
+        assertEquals("background", bodies.getValue("android-workmanager")["merged"]["profile"]["mobile"].asText())
+        assertEquals("background", bodies.getValue("desktop-scheduler")["merged"]["profile"]["desktop"].asText())
+        assertTrue(bodies.values.all { it["core_version"].asText().isNotEmpty() })
+    }
 }

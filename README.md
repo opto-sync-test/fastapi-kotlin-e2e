@@ -11,6 +11,13 @@ This repository proves a Python/FastAPI server and an official Kotlin client can
 - nested objects and array elements matched by `id` retain independent server and client fields;
 - the response exposes the native core version.
 
+The Kotlin source set now includes a scheduler-neutral background worker core
+that can be called from Android WorkManager, a desktop scheduler, or a JVM
+service. One wake sends mobile and desktop lanes concurrently with Java's
+asynchronous HTTP transport and retries the immutable batch when any response
+is lost; the integration test verifies both lanes reach the FastAPI/OptoSync
+boundary.
+
 `vendor/opto-sync-clients` and its nested `syncer.c` repository are Git submodules. Their exact revisions are recorded in `opto-sync-pin.json`.
 
 ## Run locally
